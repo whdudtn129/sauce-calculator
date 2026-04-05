@@ -21,8 +21,15 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
+// 네트워크 우선 — 인터넷 있으면 항상 최신, 없으면 캐시 사용
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request))
+    fetch(event.request)
+      .then(response => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
