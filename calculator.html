@@ -5,235 +5,320 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>소스 비율 계산기</title>
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#ff6b35">
+  <meta name="theme-color" content="#111111">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="소스계산기">
   <link rel="apple-touch-icon" href="./icon.svg">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Noto+Sans+KR:wght@300;400;600&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-      background: #f5f5f5;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #111;
+      color: #fff;
       min-height: 100vh;
-      padding: 40px 16px;
-    }
-
-    .container {
-      background: #fff;
-      border-radius: 16px;
-      padding: 32px 28px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-
-    h1 {
-      font-size: 20px;
-      font-weight: 700;
-      color: #1a1a1a;
-      margin-bottom: 24px;
-      text-align: center;
-    }
-
-    .menu-buttons {
       display: flex;
-      gap: 12px;
-      margin-bottom: 28px;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 20px 60px;
     }
 
-    .menu-btn {
-      flex: 1;
-      padding: 14px 0;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      background: #fff;
-      font-size: 15px;
-      font-weight: 600;
-      color: #888;
+    .lang-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: 1px solid #cc0000;
+      color: #cc0000;
+      padding: 5px 14px;
+      font-size: 11px;
+      letter-spacing: 2px;
       cursor: pointer;
       transition: all 0.2s;
     }
+    .lang-toggle:hover { background: #cc0000; color: #fff; }
 
-    .menu-btn:hover {
-      border-color: #ff6b35;
-      color: #ff6b35;
+    header {
+      text-align: center;
+      margin-bottom: 48px;
     }
 
-    .menu-btn.active {
-      background: #ff6b35;
-      border-color: #ff6b35;
-      color: #fff;
+    .brand {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 10px;
+      letter-spacing: 5px;
+      color: #cc0000;
+      text-transform: uppercase;
+      margin-bottom: 12px;
     }
 
-    .input-section {
-      display: none;
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #ffffff;
     }
 
-    .input-section.visible {
-      display: block;
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      justify-content: center;
     }
 
-    .input-label {
+    .divider-line { width: 40px; height: 1px; background: #333; }
+    .divider-dot { width: 4px; height: 4px; background: #cc0000; border-radius: 50%; }
+
+    .container { width: 100%; max-width: 400px; }
+
+    .menu-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .menu-btn {
+      padding: 18px 0;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: #aaa;
+      font-family: 'Noto Sans KR', sans-serif;
       font-size: 13px;
       font-weight: 600;
-      color: #555;
-      margin-bottom: 8px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .menu-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: #cc0000;
+      transition: width 0.3s;
+    }
+
+    .menu-btn:hover { color: #fff; border-color: #444; }
+    .menu-btn:hover::after { width: 60%; }
+
+    .menu-btn.active {
+      background: #1c0000;
+      border-color: #cc0000;
+      color: #fff;
+    }
+    .menu-btn.active::after { width: 60%; }
+
+    .input-section { display: none; margin-bottom: 28px; }
+    .input-section.visible { display: block; }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #888;
+      text-transform: uppercase;
+      margin-bottom: 10px;
     }
 
     .input-row {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 24px;
+      align-items: stretch;
+      border: 1px solid #2a2a2a;
+      background: #1a1a1a;
+      transition: border-color 0.2s;
     }
+    .input-row:focus-within { border-color: #cc0000; }
 
     .input-row input {
       flex: 1;
-      padding: 13px 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 16px;
-      color: #1a1a1a;
+      padding: 16px 18px;
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      font-weight: 300;
+      color: #fff;
       outline: none;
-      transition: border-color 0.2s;
+      font-family: 'Noto Sans KR', sans-serif;
     }
-
-    .input-row input:focus {
-      border-color: #ff6b35;
-    }
+    .input-row input::placeholder { color: #444; }
 
     .input-row .unit {
-      font-size: 14px;
-      color: #888;
-      min-width: 20px;
-    }
-
-    .result-section {
-      display: none;
-    }
-
-    .result-section.visible {
-      display: block;
-    }
-
-    .result-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #555;
-      margin-bottom: 12px;
-    }
-
-    .result-list {
+      padding: 0 18px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #666;
+      border-left: 1px solid #2a2a2a;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      align-items: center;
     }
+
+    .result-section { display: none; }
+    .result-section.visible { display: block; }
+
+    .result-header { margin-bottom: 14px; }
+
+    .result-list { display: flex; flex-direction: column; gap: 2px; }
 
     .result-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #fff8f5;
-      border: 1px solid #ffe0d0;
-      border-radius: 10px;
-      padding: 13px 16px;
+      background: #1a1a1a;
+      border-left: 3px solid #cc0000;
+      padding: 15px 18px;
+      transition: background 0.15s;
     }
+    .result-item:hover { background: #222; }
 
     .result-item .name {
-      font-size: 15px;
-      font-weight: 600;
-      color: #333;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #aaa;
+      text-transform: uppercase;
     }
 
     .result-item .value {
-      font-size: 16px;
-      font-weight: 700;
-      color: #ff6b35;
+      font-size: 20px;
+      font-weight: 300;
+      color: #fff;
+    }
+
+    .result-item .value span {
+      font-size: 11px;
+      color: #666;
+      margin-left: 4px;
+      letter-spacing: 1px;
+    }
+
+    footer { margin-top: 60px; text-align: center; }
+
+    .footer-line {
+      width: 1px;
+      height: 28px;
+      background: linear-gradient(to bottom, #cc0000, transparent);
+      margin: 0 auto 12px;
+    }
+
+    .footer-text {
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: #444;
+      text-transform: uppercase;
     }
   </style>
 </head>
 <body>
+
+  <button class="lang-toggle" onclick="toggleLang()" id="langBtn">EN</button>
+
+  <header>
+    <div class="brand">Sauce Calculator</div>
+    <h1 id="title">소스 비율 계산기</h1>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-dot"></div>
+      <div class="divider-line"></div>
+    </div>
+  </header>
+
   <div class="container">
-    <h1>소스 비율 계산기</h1>
 
     <div class="menu-buttons">
-      <button class="menu-btn" onclick="selectMenu('spicy-tuna')">스파이시 투나</button>
-      <button class="menu-btn" onclick="selectMenu('salmon-chop')">살몬 찹</button>
+      <button class="menu-btn" id="btn-tuna" onclick="selectMenu('spicy-tuna')">
+        <span class="ko">스파이시 투나</span>
+        <span class="en" style="display:none">SPICY TUNA</span>
+      </button>
+      <button class="menu-btn" id="btn-salmon" onclick="selectMenu('salmon-chop')">
+        <span class="ko">살몬 찹</span>
+        <span class="en" style="display:none">SALMON CHOP</span>
+      </button>
     </div>
 
     <div class="input-section" id="input-section">
-      <div class="input-label" id="input-label">무게 입력</div>
+      <div class="section-label" id="input-label">무게 입력</div>
       <div class="input-row">
-        <input
-          type="number"
-          id="weight-input"
-          placeholder="예: 1000"
-          min="1"
-          oninput="calculate()"
-        >
-        <span class="unit">g</span>
+        <input type="number" id="weight-input" placeholder="0" min="1" oninput="calculate()">
+        <div class="unit">G</div>
       </div>
     </div>
 
     <div class="result-section" id="result-section">
-      <div class="result-title">소스 비율 결과</div>
+      <div class="result-header">
+        <div class="section-label ko">소스 비율</div>
+        <div class="section-label en" style="display:none">SAUCE RATIO</div>
+      </div>
       <div class="result-list" id="result-list"></div>
     </div>
+
   </div>
+
+  <footer>
+    <div class="footer-line"></div>
+    <div class="footer-text">Kitchen Tool</div>
+  </footer>
 
   <script>
     const recipes = {
       'spicy-tuna': {
-        label: '스파이시 투나 무게 입력',
+        label: { ko: '스파이시 투나 무게', en: 'SPICY TUNA WEIGHT' },
         ingredients: [
-          { name: '간장', per1kg: 25 },
-          { name: '라유', per1kg: 25 },
-          { name: '스리라차', per1kg: 25 },
-          { name: '초장', per1kg: 180 },
-          { name: '시치미', per1kg: 5 },
+          { ko: '간장', en: 'SOY SAUCE', per1kg: 25 },
+          { ko: '라유', en: 'RAYU', per1kg: 25 },
+          { ko: '스리라차', en: 'SRIRACHA', per1kg: 25 },
+          { ko: '초장', en: 'CHOJANG', per1kg: 180 },
+          { ko: '시치미', en: 'SHICHIMI', per1kg: 5 },
         ]
       },
       'salmon-chop': {
-        label: '살몬 무게 입력',
+        label: { ko: '살몬 무게', en: 'SALMON WEIGHT' },
         ingredients: [
-          { name: '벌크마요', per1kg: 100 },
-          { name: '스리라차', per1kg: 20 },
+          { ko: '벌크마요', en: 'BULK MAYO', per1kg: 100 },
+          { ko: '스리라차', en: 'SRIRACHA', per1kg: 20 },
         ]
       }
     };
 
     let currentMenu = null;
+    let lang = 'ko';
+
+    function toggleLang() {
+      lang = lang === 'ko' ? 'en' : 'ko';
+      document.getElementById('langBtn').textContent = lang === 'ko' ? 'EN' : 'KO';
+      document.querySelectorAll('.ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+      document.querySelectorAll('.en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+      document.getElementById('title').textContent = lang === 'ko' ? '소스 비율 계산기' : 'Sauce Ratio Calculator';
+      if (currentMenu) {
+        document.getElementById('input-label').textContent = recipes[currentMenu].label[lang];
+        calculate();
+      }
+    }
 
     function selectMenu(menu) {
       currentMenu = menu;
-
-      document.querySelectorAll('.menu-btn').forEach((btn, i) => {
-        btn.classList.toggle('active', (i === 0 && menu === 'spicy-tuna') || (i === 1 && menu === 'salmon-chop'));
-      });
-
-      document.getElementById('input-label').textContent = recipes[menu].label;
+      document.getElementById('btn-tuna').classList.toggle('active', menu === 'spicy-tuna');
+      document.getElementById('btn-salmon').classList.toggle('active', menu === 'salmon-chop');
+      document.getElementById('input-label').textContent = recipes[menu].label[lang];
       document.getElementById('input-section').classList.add('visible');
-
       const input = document.getElementById('weight-input');
       input.value = '';
       input.focus();
-
       document.getElementById('result-section').classList.remove('visible');
       document.getElementById('result-list').innerHTML = '';
     }
 
     function calculate() {
       if (!currentMenu) return;
-
       const weight = parseFloat(document.getElementById('weight-input').value);
       const resultSection = document.getElementById('result-section');
       const resultList = document.getElementById('result-list');
@@ -245,21 +330,20 @@
       }
 
       const ratio = weight / 1000;
-      const ingredients = recipes[currentMenu].ingredients;
-
-      resultList.innerHTML = ingredients.map(item => {
+      resultList.innerHTML = recipes[currentMenu].ingredients.map(item => {
         const amount = (item.per1kg * ratio).toFixed(1);
         const display = amount.endsWith('.0') ? parseInt(amount) : amount;
         return `
           <div class="result-item">
-            <span class="name">${item.name}</span>
-            <span class="value">${display}g</span>
+            <span class="name">${item[lang]}</span>
+            <span class="value">${display}<span>g</span></span>
           </div>
         `;
       }).join('');
 
       resultSection.classList.add('visible');
     }
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js');
     }
