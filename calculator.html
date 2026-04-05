@@ -216,6 +216,121 @@
       color: #444;
       text-transform: uppercase;
     }
+
+    /* 하단 탭 네비게이션 */
+    .tab-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      background: #0d0d0d;
+      border-top: 1px solid #222;
+      z-index: 100;
+    }
+
+    .tab-nav button {
+      flex: 1;
+      padding: 14px 0;
+      background: transparent;
+      border: none;
+      color: #555;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .tab-nav button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: #cc0000;
+      transition: width 0.3s;
+    }
+
+    .tab-nav button.active { color: #fff; }
+    .tab-nav button.active::after { width: 40%; }
+
+    /* 페이지 */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    body { padding-bottom: 80px; }
+
+    /* 레시피 카드 */
+    .recipe-card {
+      background: #1a1a1a;
+      border-left: 3px solid #cc0000;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .recipe-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 18px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .recipe-card-header .recipe-name {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .recipe-card-header .recipe-base {
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: #666;
+    }
+
+    .recipe-card-header .chevron {
+      font-size: 10px;
+      color: #555;
+      transition: transform 0.3s;
+    }
+
+    .recipe-card.open .chevron { transform: rotate(180deg); }
+
+    .recipe-card-body {
+      display: none;
+      border-top: 1px solid #222;
+    }
+
+    .recipe-card.open .recipe-card-body { display: block; }
+
+    .recipe-ingredient {
+      display: flex;
+      justify-content: space-between;
+      padding: 11px 18px;
+      border-bottom: 1px solid #1f1f1f;
+    }
+
+    .recipe-ingredient:last-child { border-bottom: none; }
+
+    .recipe-ingredient .ing-name {
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: #aaa;
+    }
+
+    .recipe-ingredient .ing-amount {
+      font-size: 13px;
+      font-weight: 400;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -234,31 +349,139 @@
 
   <div class="container">
 
-    <div class="menu-buttons">
-      <button class="menu-btn" id="btn-tuna" onclick="selectMenu('spicy-tuna')">
-        <span class="ko">스파이시 투나</span>
-        <span class="en" style="display:none">SPICY TUNA</span>
-      </button>
-      <button class="menu-btn" id="btn-salmon" onclick="selectMenu('salmon-chop')">
-        <span class="ko">살몬 찹</span>
-        <span class="en" style="display:none">SALMON CHOP</span>
-      </button>
-    </div>
+    <!-- 계산기 페이지 -->
+    <div class="page active" id="page-calc">
+      <div class="menu-buttons">
+        <button class="menu-btn" id="btn-tuna" onclick="selectMenu('spicy-tuna')">
+          <span class="ko">스파이시 투나</span>
+          <span class="en" style="display:none">SPICY TUNA</span>
+        </button>
+        <button class="menu-btn" id="btn-salmon" onclick="selectMenu('salmon-chop')">
+          <span class="ko">살몬 찹</span>
+          <span class="en" style="display:none">SALMON CHOP</span>
+        </button>
+      </div>
 
-    <div class="input-section" id="input-section">
-      <div class="section-label" id="input-label">무게 입력</div>
-      <div class="input-row">
-        <input type="number" id="weight-input" placeholder="0" min="1" oninput="calculate()">
-        <div class="unit">G</div>
+      <div class="input-section" id="input-section">
+        <div class="section-label" id="input-label">무게 입력</div>
+        <div class="input-row">
+          <input type="number" id="weight-input" placeholder="0" min="1" oninput="calculate()">
+          <div class="unit">G</div>
+        </div>
+      </div>
+
+      <div class="result-section" id="result-section">
+        <div class="result-header">
+          <div class="section-label ko">소스 비율</div>
+          <div class="section-label en" style="display:none">SAUCE RATIO</div>
+        </div>
+        <div class="result-list" id="result-list"></div>
       </div>
     </div>
 
-    <div class="result-section" id="result-section">
-      <div class="result-header">
-        <div class="section-label ko">소스 비율</div>
-        <div class="section-label en" style="display:none">SAUCE RATIO</div>
+    <!-- 레시피 페이지 -->
+    <div class="page" id="page-recipe">
+      <div class="section-label" style="margin-bottom:16px">
+        <span class="ko">소스 레시피</span>
+        <span class="en" style="display:none">SAUCE RECIPES</span>
       </div>
-      <div class="result-list" id="result-list"></div>
+
+      <div class="recipe-card" onclick="toggleCard(this)">
+        <div class="recipe-card-header">
+          <div>
+            <div class="recipe-name">찹 스캘럽</div>
+            <div class="recipe-base ko">1봉지 기준</div>
+            <div class="recipe-base en" style="display:none">Per 1 Pack</div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="recipe-card-body">
+          <div class="recipe-ingredient"><span class="ing-name ko">벌크마요</span><span class="ing-name en" style="display:none">Bulk Mayo</span><span class="ing-amount">175g</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">마사고</span><span class="ing-name en" style="display:none">Masago</span><span class="ing-amount">125g</span></div>
+        </div>
+      </div>
+
+      <div class="recipe-card" onclick="toggleCard(this)">
+        <div class="recipe-card-header">
+          <div>
+            <div class="recipe-name">사워크림</div>
+            <div class="recipe-base ko">500ml 기준</div>
+            <div class="recipe-base en" style="display:none">Per 500ml</div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="recipe-card-body">
+          <div class="recipe-ingredient"><span class="ing-name ko">소금</span><span class="ing-name en" style="display:none">Salt</span><span class="ing-amount">2 tsp</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">파슬리</span><span class="ing-name en" style="display:none">Parsley</span><span class="ing-amount">0.5 tsp</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">후추</span><span class="ing-name en" style="display:none">Pepper</span><span class="ing-amount">0.5 tsp</span></div>
+        </div>
+      </div>
+
+      <div class="recipe-card" onclick="toggleCard(this)">
+        <div class="recipe-card-header">
+          <div>
+            <div class="recipe-name">스파이시마요</div>
+            <div class="recipe-base ko">1:5 비율</div>
+            <div class="recipe-base en" style="display:none">1:5 Ratio</div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="recipe-card-body">
+          <div class="recipe-ingredient"><span class="ing-name ko">스리라차</span><span class="ing-name en" style="display:none">Sriracha</span><span class="ing-amount">630g</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">벌크마요</span><span class="ing-name en" style="display:none">Bulk Mayo</span><span class="ing-amount">3150g</span></div>
+        </div>
+      </div>
+
+      <div class="recipe-card" onclick="toggleCard(this)">
+        <div class="recipe-card-header">
+          <div>
+            <div class="recipe-name">망고소스</div>
+            <div class="recipe-base">—</div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="recipe-card-body">
+          <div class="recipe-ingredient"><span class="ing-name ko">냉동망고</span><span class="ing-name en" style="display:none">Frozen Mango</span><span class="ing-amount">700g</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">미림</span><span class="ing-name en" style="display:none">Mirin</span><span class="ing-amount">400ml</span></div>
+        </div>
+      </div>
+
+      <div class="recipe-card" onclick="toggleCard(this)">
+        <div class="recipe-card-header">
+          <div>
+            <div class="recipe-name">와사비마요</div>
+            <div class="recipe-base">—</div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="recipe-card-body">
+          <div class="recipe-ingredient"><span class="ing-name ko">벌크마요</span><span class="ing-name en" style="display:none">Bulk Mayo</span><span class="ing-amount">2kg</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">미림</span><span class="ing-name en" style="display:none">Mirin</span><span class="ing-amount">1L</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">와사비가루</span><span class="ing-name en" style="display:none">Wasabi Powder</span><span class="ing-amount">150g</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">설탕</span><span class="ing-name en" style="display:none">Sugar</span><span class="ing-amount">8 tsp</span></div>
+        </div>
+      </div>
+
+      <div class="recipe-card" onclick="toggleCard(this)">
+        <div class="recipe-card-header">
+          <div>
+            <div class="recipe-name">타르타르</div>
+            <div class="recipe-base">—</div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="recipe-card-body">
+          <div class="recipe-ingredient"><span class="ing-name ko">양파펄프</span><span class="ing-name en" style="display:none">Onion Pulp</span><span class="ing-amount">550g</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">켄코마요</span><span class="ing-name en" style="display:none">Kenko Mayo</span><span class="ing-amount">3kg</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">물</span><span class="ing-name en" style="display:none">Water</span><span class="ing-amount">100ml</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">레몬</span><span class="ing-name en" style="display:none">Lemon</span><span class="ing-amount">7 tsp</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">젓갈</span><span class="ing-name en" style="display:none">Jeotgal</span><span class="ing-amount">7 tsp</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">설탕</span><span class="ing-name en" style="display:none">Sugar</span><span class="ing-amount">80g</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">생강</span><span class="ing-name en" style="display:none">Ginger</span><span class="ing-amount">1.5 tsp</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">후추</span><span class="ing-name en" style="display:none">Pepper</span><span class="ing-amount">4 tsp</span></div>
+          <div class="recipe-ingredient"><span class="ing-name ko">노른자</span><span class="ing-name en" style="display:none">Egg Yolk</span><span class="ing-amount">8개</span></div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -267,6 +490,18 @@
     <div class="footer-line"></div>
     <div class="footer-text">Kitchen Tool</div>
   </footer>
+
+  <!-- 하단 탭 -->
+  <nav class="tab-nav">
+    <button class="active" id="tab-calc" onclick="switchTab('calc')">
+      <span class="ko">계산기</span>
+      <span class="en" style="display:none">CALC</span>
+    </button>
+    <button id="tab-recipe" onclick="switchTab('recipe')">
+      <span class="ko">레시피</span>
+      <span class="en" style="display:none">RECIPE</span>
+    </button>
+  </nav>
 
   <script>
     const recipes = {
@@ -342,6 +577,22 @@
       }).join('');
 
       resultSection.classList.add('visible');
+    }
+
+    function switchTab(tab) {
+      document.getElementById('page-calc').classList.toggle('active', tab === 'calc');
+      document.getElementById('page-recipe').classList.toggle('active', tab === 'recipe');
+      document.getElementById('tab-calc').classList.toggle('active', tab === 'calc');
+      document.getElementById('tab-recipe').classList.toggle('active', tab === 'recipe');
+      if (tab === 'calc') {
+        document.getElementById('title').textContent = lang === 'ko' ? '소스 비율 계산기' : 'Sauce Ratio Calculator';
+      } else {
+        document.getElementById('title').textContent = lang === 'ko' ? '소스 레시피' : 'Sauce Recipes';
+      }
+    }
+
+    function toggleCard(card) {
+      card.classList.toggle('open');
     }
 
     if ('serviceWorker' in navigator) {
