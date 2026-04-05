@@ -13,6 +13,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Noto+Sans+KR:wght@300;400;600&display=swap');
 
+    /* ── 기본 ── */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -23,10 +24,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 48px 20px 60px;
+      padding: 48px 20px 80px;
     }
 
-    .lang-toggle {
+    /* ── 언어 토글 ── */
+    #langBtn {
       position: fixed;
       top: 20px;
       right: 20px;
@@ -38,16 +40,17 @@
       letter-spacing: 2px;
       cursor: pointer;
       transition: all 0.2s;
+      z-index: 200;
     }
-    .lang-toggle:hover { background: #cc0000; color: #fff; }
+    #langBtn:hover { background: #cc0000; color: #fff; }
 
+    /* ── 헤더 ── */
     header {
       text-align: center;
-      margin-bottom: 48px;
+      margin-bottom: 40px;
     }
 
     .brand {
-      font-family: 'Noto Sans KR', sans-serif;
       font-size: 10px;
       letter-spacing: 5px;
       color: #cc0000;
@@ -60,22 +63,35 @@
       font-size: 26px;
       font-weight: 700;
       letter-spacing: 2px;
-      color: #ffffff;
     }
 
     .divider {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 10px;
       margin-top: 14px;
-      justify-content: center;
     }
-
     .divider-line { width: 40px; height: 1px; background: #333; }
-    .divider-dot { width: 4px; height: 4px; background: #cc0000; border-radius: 50%; }
+    .divider-dot  { width: 4px; height: 4px; background: #cc0000; border-radius: 50%; }
 
+    /* ── 컨테이너 ── */
     .container { width: 100%; max-width: 400px; }
 
+    /* ── 페이지 전환 ── */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── 섹션 레이블 ── */
+    .label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #888;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    /* ── 소스 계산기 ── */
     .menu-buttons {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -97,39 +113,25 @@
       position: relative;
       overflow: hidden;
     }
-
     .menu-btn::after {
       content: '';
       position: absolute;
-      bottom: 0;
-      left: 50%;
+      bottom: 0; left: 50%;
       transform: translateX(-50%);
-      width: 0;
-      height: 2px;
+      width: 0; height: 2px;
       background: #cc0000;
       transition: width 0.3s;
     }
-
     .menu-btn:hover { color: #fff; border-color: #444; }
-    .menu-btn:hover::after { width: 60%; }
-
-    .menu-btn.active {
-      background: #1c0000;
-      border-color: #cc0000;
-      color: #fff;
-    }
+    .menu-btn:hover::after,
     .menu-btn.active::after { width: 60%; }
+    .menu-btn.active { background: #1c0000; border-color: #cc0000; color: #fff; }
 
-    .input-section { display: none; margin-bottom: 28px; }
-    .input-section.visible { display: block; }
-
-    .section-label {
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: #888;
-      text-transform: uppercase;
-      margin-bottom: 10px;
+    .input-box {
+      display: none;
+      margin-bottom: 28px;
     }
+    .input-box.visible { display: block; }
 
     .input-row {
       display: flex;
@@ -139,7 +141,6 @@
       transition: border-color 0.2s;
     }
     .input-row:focus-within { border-color: #cc0000; }
-
     .input-row input {
       flex: 1;
       padding: 16px 18px;
@@ -152,7 +153,6 @@
       font-family: 'Noto Sans KR', sans-serif;
     }
     .input-row input::placeholder { color: #444; }
-
     .input-row .unit {
       padding: 0 18px;
       font-size: 12px;
@@ -163,10 +163,8 @@
       align-items: center;
     }
 
-    .result-section { display: none; }
-    .result-section.visible { display: block; }
-
-    .result-header { margin-bottom: 14px; }
+    .result-box { display: none; }
+    .result-box.visible { display: block; }
 
     .result-list { display: flex; flex-direction: column; gap: 2px; }
 
@@ -180,99 +178,17 @@
       transition: background 0.15s;
     }
     .result-item:hover { background: #222; }
+    .result-item .r-name { font-size: 12px; letter-spacing: 2px; color: #aaa; text-transform: uppercase; }
+    .result-item .r-val  { font-size: 20px; font-weight: 300; }
+    .result-item .r-val small { font-size: 11px; color: #666; margin-left: 4px; letter-spacing: 1px; }
 
-    .result-item .name {
-      font-size: 12px;
-      letter-spacing: 2px;
-      color: #aaa;
-      text-transform: uppercase;
-    }
-
-    .result-item .value {
-      font-size: 20px;
-      font-weight: 300;
-      color: #fff;
-    }
-
-    .result-item .value span {
-      font-size: 11px;
-      color: #666;
-      margin-left: 4px;
-      letter-spacing: 1px;
-    }
-
-    footer { margin-top: 60px; text-align: center; }
-
-    .footer-line {
-      width: 1px;
-      height: 28px;
-      background: linear-gradient(to bottom, #cc0000, transparent);
-      margin: 0 auto 12px;
-    }
-
-    .footer-text {
-      font-size: 9px;
-      letter-spacing: 4px;
-      color: #444;
-      text-transform: uppercase;
-    }
-
-    /* 하단 탭 네비게이션 */
-    .tab-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      background: #0d0d0d;
-      border-top: 1px solid #222;
-      z-index: 100;
-    }
-
-    .tab-nav button {
-      flex: 1;
-      padding: 14px 0;
-      background: transparent;
-      border: none;
-      color: #555;
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: color 0.2s;
-      position: relative;
-    }
-
-    .tab-nav button::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 2px;
-      background: #cc0000;
-      transition: width 0.3s;
-    }
-
-    .tab-nav button.active { color: #fff; }
-    .tab-nav button.active::after { width: 40%; }
-
-    /* 페이지 */
-    .page { display: none; }
-    .page.active { display: block; }
-
-    body { padding-bottom: 80px; }
-
-    /* 레시피 카드 */
+    /* ── 레시피 카드 ── */
     .recipe-card {
       background: #1a1a1a;
       border-left: 3px solid #cc0000;
       margin-bottom: 10px;
       overflow: hidden;
     }
-
     .recipe-card-header {
       display: flex;
       justify-content: space-between;
@@ -281,71 +197,28 @@
       cursor: pointer;
       user-select: none;
     }
-
-    .recipe-card-header .recipe-name {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      color: #fff;
-      text-transform: uppercase;
-    }
-
-    .recipe-card-header .recipe-base {
-      font-size: 10px;
-      letter-spacing: 1px;
-      color: #cc0000;
-      margin-top: 4px;
-    }
-
-    .recipe-card-header .chevron {
-      font-size: 10px;
-      color: #555;
-      transition: transform 0.3s;
-    }
-
+    .r-title { font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+    .r-base  { font-size: 10px; letter-spacing: 1px; color: #cc0000; margin-top: 4px; }
+    .chevron { font-size: 10px; color: #555; transition: transform 0.3s; }
     .recipe-card.open .chevron { transform: rotate(180deg); }
 
-    .recipe-card-body {
-      display: none;
-      border-top: 1px solid #222;
-    }
-
+    .recipe-card-body { display: none; border-top: 1px solid #222; }
     .recipe-card.open .recipe-card-body { display: block; }
 
-    .recipe-ingredient {
+    .recipe-row {
       display: flex;
       justify-content: space-between;
       padding: 11px 18px;
       border-bottom: 1px solid #1f1f1f;
     }
+    .recipe-row:last-child { border-bottom: none; }
+    .recipe-row .ing  { font-size: 12px; letter-spacing: 1px; color: #aaa; }
+    .recipe-row .amt  { font-size: 13px; color: #fff; }
 
-    .recipe-ingredient:last-child { border-bottom: none; }
+    /* ── 일반 계산기 ── */
+    .calc-wrap { display: flex; gap: 10px; align-items: flex-start; }
 
-    .recipe-ingredient .ing-name {
-      font-size: 12px;
-      letter-spacing: 1px;
-      color: #aaa;
-    }
-
-    .recipe-ingredient .ing-amount {
-      font-size: 13px;
-      font-weight: 400;
-      color: #fff;
-    }
-
-    /* 일반 계산기 */
-    .calc-wrap {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-    }
-
-    .calc-main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .calc-main { flex: 1; display: flex; flex-direction: column; gap: 6px; }
 
     .calc-display {
       background: #1a1a1a;
@@ -354,65 +227,32 @@
       text-align: right;
       margin-bottom: 6px;
     }
-
     .calc-expr {
-      font-size: 11px;
-      color: #555;
-      letter-spacing: 1px;
-      min-height: 16px;
-      margin-bottom: 4px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size: 11px; color: #555; letter-spacing: 1px;
+      min-height: 16px; margin-bottom: 4px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
-
     .calc-num {
-      font-size: 32px;
-      font-weight: 300;
-      color: #fff;
-      letter-spacing: 1px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size: 32px; font-weight: 300; letter-spacing: 1px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
 
-    .calc-keys {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-    }
+    .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 
     .calc-key {
       padding: 16px 0;
-      border: none;
-      border-radius: 2px;
+      border: none; border-radius: 2px;
       font-family: 'Noto Sans KR', sans-serif;
-      font-size: 16px;
-      font-weight: 400;
+      font-size: 16px; font-weight: 400;
       cursor: pointer;
       transition: opacity 0.15s;
-      background: #1a1a1a;
-      color: #fff;
+      background: #1a1a1a; color: #fff;
     }
-
     .calc-key:active { opacity: 0.6; }
+    .calc-key.op    { background: #2a0000; color: #ff4444; }
+    .calc-key.eq    { background: #cc0000; color: #fff; }
+    .calc-key.clear { background: #222; color: #aaa; }
 
-    .calc-key.op {
-      background: #2a0000;
-      color: #ff4444;
-    }
-
-    .calc-key.eq {
-      background: #cc0000;
-      color: #fff;
-    }
-
-    .calc-key.clear {
-      background: #222;
-      color: #aaa;
-    }
-
-    /* 히스토리 로그 */
     .calc-log {
       width: 100px;
       background: #0d0d0d;
@@ -424,40 +264,64 @@
       flex-direction: column;
       gap: 8px;
     }
-
     .calc-log::-webkit-scrollbar { width: 2px; }
     .calc-log::-webkit-scrollbar-thumb { background: #333; }
 
     .log-title {
-      font-size: 8px;
-      letter-spacing: 2px;
-      color: #444;
-      text-transform: uppercase;
-      text-align: center;
-      padding-bottom: 6px;
-      border-bottom: 1px solid #1a1a1a;
+      font-size: 8px; letter-spacing: 2px; color: #444;
+      text-transform: uppercase; text-align: center;
+      padding-bottom: 6px; border-bottom: 1px solid #1a1a1a;
     }
+    .log-item { text-align: right; }
+    .log-expr   { font-size: 9px; color: #555; line-break: anywhere; }
+    .log-result { font-size: 13px; font-weight: 300; color: #ddd; }
 
-    .log-item {
-      text-align: right;
+    /* ── 푸터 ── */
+    footer { margin-top: 60px; text-align: center; }
+    .footer-line {
+      width: 1px; height: 28px;
+      background: linear-gradient(to bottom, #cc0000, transparent);
+      margin: 0 auto 12px;
     }
+    .footer-text { font-size: 9px; letter-spacing: 4px; color: #444; text-transform: uppercase; }
 
-    .log-expr {
-      font-size: 9px;
+    /* ── 하단 탭 ── */
+    .tab-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      display: flex;
+      background: #0d0d0d;
+      border-top: 1px solid #222;
+      z-index: 100;
+    }
+    .tab-nav button {
+      flex: 1;
+      padding: 14px 0;
+      background: transparent; border: none;
       color: #555;
-      line-break: anywhere;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 11px; letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.2s;
+      position: relative;
     }
-
-    .log-result {
-      font-size: 13px;
-      font-weight: 300;
-      color: #ddd;
+    .tab-nav button::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 2px;
+      background: #cc0000;
+      transition: width 0.3s;
     }
+    .tab-nav button.active { color: #fff; }
+    .tab-nav button.active::after { width: 40%; }
   </style>
 </head>
 <body>
 
-  <button class="lang-toggle" onclick="toggleLang()" id="langBtn">EN</button>
+  <button id="langBtn" onclick="toggleLang()">EN</button>
 
   <header>
     <div class="brand">Sauce Calculator</div>
@@ -471,142 +335,32 @@
 
   <div class="container">
 
-    <!-- 계산기 페이지 -->
+    <!-- 소스 계산기 -->
     <div class="page active" id="page-calc">
       <div class="menu-buttons">
-        <button class="menu-btn" id="btn-tuna" onclick="selectMenu('spicy-tuna')">
-          <span class="ko">스파이시 투나</span>
-          <span class="en" style="display:none">SPICY TUNA</span>
-        </button>
-        <button class="menu-btn" id="btn-salmon" onclick="selectMenu('salmon-chop')">
-          <span class="ko">살몬 찹</span>
-          <span class="en" style="display:none">CHOPPED SALMON</span>
-        </button>
+        <button class="menu-btn" id="btn-spicy-tuna" onclick="selectMenu('spicy-tuna')"></button>
+        <button class="menu-btn" id="btn-salmon-chop" onclick="selectMenu('salmon-chop')"></button>
       </div>
-
-      <div class="input-section" id="input-section">
-        <div class="section-label" id="input-label">무게 입력</div>
+      <div class="input-box" id="input-box">
+        <div class="label" id="input-label"></div>
         <div class="input-row">
           <input type="number" id="weight-input" placeholder="0" min="1" oninput="calculate()">
           <div class="unit">G</div>
         </div>
       </div>
-
-      <div class="result-section" id="result-section">
-        <div class="result-header">
-          <div class="section-label ko">소스 비율</div>
-          <div class="section-label en" style="display:none">SAUCE RATIO</div>
-        </div>
+      <div class="result-box" id="result-box">
+        <div class="label" id="result-label"></div>
         <div class="result-list" id="result-list"></div>
       </div>
     </div>
 
-    <!-- 레시피 페이지 -->
+    <!-- 레시피 -->
     <div class="page" id="page-recipe">
-      <div class="section-label" style="margin-bottom:16px">
-        <span class="ko">소스 레시피</span>
-        <span class="en" style="display:none">SAUCE RECIPES</span>
-      </div>
-
-      <div class="recipe-card" onclick="toggleCard(this)">
-        <div class="recipe-card-header">
-          <div>
-            <div class="recipe-name"><span class="ko">찹 스캘럽</span><span class="en" style="display:none">Chopped Scallop</span></div>
-            <div class="recipe-base ko">1봉지 기준</div>
-            <div class="recipe-base en" style="display:none">Per 1 Pack</div>
-          </div>
-          <span class="chevron">▼</span>
-        </div>
-        <div class="recipe-card-body">
-          <div class="recipe-ingredient"><span class="ing-name ko">벌크마요</span><span class="ing-name en" style="display:none">Bulk Mayo</span><span class="ing-amount">175g</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">마사고</span><span class="ing-name en" style="display:none">Masago</span><span class="ing-amount">125g</span></div>
-        </div>
-      </div>
-
-      <div class="recipe-card" onclick="toggleCard(this)">
-        <div class="recipe-card-header">
-          <div>
-            <div class="recipe-name"><span class="ko">사워크림</span><span class="en" style="display:none">Sour Cream</span></div>
-            <div class="recipe-base ko">500ml 기준</div>
-            <div class="recipe-base en" style="display:none">Per 500ml</div>
-          </div>
-          <span class="chevron">▼</span>
-        </div>
-        <div class="recipe-card-body">
-          <div class="recipe-ingredient"><span class="ing-name ko">소금</span><span class="ing-name en" style="display:none">Salt</span><span class="ing-amount">2 tsp</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">파슬리</span><span class="ing-name en" style="display:none">Parsley</span><span class="ing-amount">0.5 tsp</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">후추</span><span class="ing-name en" style="display:none">Pepper</span><span class="ing-amount">0.5 tsp</span></div>
-        </div>
-      </div>
-
-      <div class="recipe-card" onclick="toggleCard(this)">
-        <div class="recipe-card-header">
-          <div>
-            <div class="recipe-name"><span class="ko">스파이시마요</span><span class="en" style="display:none">Spicy Mayo</span></div>
-            <div class="recipe-base ko">1:5 비율</div>
-            <div class="recipe-base en" style="display:none">1:5 Ratio</div>
-          </div>
-          <span class="chevron">▼</span>
-        </div>
-        <div class="recipe-card-body">
-          <div class="recipe-ingredient"><span class="ing-name ko">스리라차</span><span class="ing-name en" style="display:none">Sriracha</span><span class="ing-amount">630g</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">벌크마요</span><span class="ing-name en" style="display:none">Bulk Mayo</span><span class="ing-amount">3150g</span></div>
-        </div>
-      </div>
-
-      <div class="recipe-card" onclick="toggleCard(this)">
-        <div class="recipe-card-header">
-          <div>
-            <div class="recipe-name"><span class="ko">망고소스</span><span class="en" style="display:none">Mango Sauce</span></div>
-            <div class="recipe-base">—</div>
-          </div>
-          <span class="chevron">▼</span>
-        </div>
-        <div class="recipe-card-body">
-          <div class="recipe-ingredient"><span class="ing-name ko">냉동망고</span><span class="ing-name en" style="display:none">Frozen Mango</span><span class="ing-amount">700g</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">미림</span><span class="ing-name en" style="display:none">Mirin</span><span class="ing-amount">400ml</span></div>
-        </div>
-      </div>
-
-      <div class="recipe-card" onclick="toggleCard(this)">
-        <div class="recipe-card-header">
-          <div>
-            <div class="recipe-name"><span class="ko">와사비마요</span><span class="en" style="display:none">Wasabi Mayo</span></div>
-            <div class="recipe-base">—</div>
-          </div>
-          <span class="chevron">▼</span>
-        </div>
-        <div class="recipe-card-body">
-          <div class="recipe-ingredient"><span class="ing-name ko">벌크마요</span><span class="ing-name en" style="display:none">Bulk Mayo</span><span class="ing-amount">2kg</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">미림</span><span class="ing-name en" style="display:none">Mirin</span><span class="ing-amount">1L</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">와사비가루</span><span class="ing-name en" style="display:none">Wasabi Powder</span><span class="ing-amount">150g</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">설탕</span><span class="ing-name en" style="display:none">Sugar</span><span class="ing-amount">8 tsp</span></div>
-        </div>
-      </div>
-
-      <div class="recipe-card" onclick="toggleCard(this)">
-        <div class="recipe-card-header">
-          <div>
-            <div class="recipe-name"><span class="ko">타르타르</span><span class="en" style="display:none">Tartar</span></div>
-            <div class="recipe-base">—</div>
-          </div>
-          <span class="chevron">▼</span>
-        </div>
-        <div class="recipe-card-body">
-          <div class="recipe-ingredient"><span class="ing-name ko">양파펄프</span><span class="ing-name en" style="display:none">Onion Pulp</span><span class="ing-amount">550g</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">켄코마요</span><span class="ing-name en" style="display:none">Kenko Mayo</span><span class="ing-amount">3kg</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">물</span><span class="ing-name en" style="display:none">Water</span><span class="ing-amount">100ml</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">레몬</span><span class="ing-name en" style="display:none">Lemon</span><span class="ing-amount">7 tsp</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">젓갈</span><span class="ing-name en" style="display:none">Jeotgal</span><span class="ing-amount">7 tsp</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">설탕</span><span class="ing-name en" style="display:none">Sugar</span><span class="ing-amount">80g</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">생강</span><span class="ing-name en" style="display:none">Ginger</span><span class="ing-amount">1.5 tsp</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">후추</span><span class="ing-name en" style="display:none">Pepper</span><span class="ing-amount">4 tsp</span></div>
-          <div class="recipe-ingredient"><span class="ing-name ko">노른자</span><span class="ing-name en" style="display:none">Egg Yolk</span><span class="ing-amount">8개</span></div>
-        </div>
-      </div>
+      <div class="label" id="recipe-label" style="margin-bottom:16px"></div>
+      <div id="recipe-list"></div>
     </div>
 
-    <!-- 일반 계산기 페이지 -->
+    <!-- 일반 계산기 -->
     <div class="page" id="page-general">
       <div class="calc-wrap">
         <div class="calc-main">
@@ -618,29 +372,24 @@
             <button class="calc-key clear" onclick="calcClear()">AC</button>
             <button class="calc-key clear" onclick="calcToggleSign()">+/-</button>
             <button class="calc-key clear" onclick="calcPercent()">%</button>
-            <button class="calc-key op" onclick="calcOp('÷')">÷</button>
-
-            <button class="calc-key" onclick="calcNum('7')">7</button>
-            <button class="calc-key" onclick="calcNum('8')">8</button>
-            <button class="calc-key" onclick="calcNum('9')">9</button>
-            <button class="calc-key op" onclick="calcOp('×')">×</button>
-
-            <button class="calc-key" onclick="calcNum('4')">4</button>
-            <button class="calc-key" onclick="calcNum('5')">5</button>
-            <button class="calc-key" onclick="calcNum('6')">6</button>
-            <button class="calc-key op" onclick="calcOp('−')">−</button>
-
-            <button class="calc-key" onclick="calcNum('1')">1</button>
-            <button class="calc-key" onclick="calcNum('2')">2</button>
-            <button class="calc-key" onclick="calcNum('3')">3</button>
-            <button class="calc-key op" onclick="calcOp('+')">+</button>
-
+            <button class="calc-key op"    onclick="calcOp('÷')">÷</button>
+            <button class="calc-key"       onclick="calcNum('7')">7</button>
+            <button class="calc-key"       onclick="calcNum('8')">8</button>
+            <button class="calc-key"       onclick="calcNum('9')">9</button>
+            <button class="calc-key op"    onclick="calcOp('×')">×</button>
+            <button class="calc-key"       onclick="calcNum('4')">4</button>
+            <button class="calc-key"       onclick="calcNum('5')">5</button>
+            <button class="calc-key"       onclick="calcNum('6')">6</button>
+            <button class="calc-key op"    onclick="calcOp('−')">−</button>
+            <button class="calc-key"       onclick="calcNum('1')">1</button>
+            <button class="calc-key"       onclick="calcNum('2')">2</button>
+            <button class="calc-key"       onclick="calcNum('3')">3</button>
+            <button class="calc-key op"    onclick="calcOp('+')">+</button>
             <button class="calc-key" onclick="calcNum('0')" style="grid-column:span 2">0</button>
-            <button class="calc-key" onclick="calcDot()">.</button>
-            <button class="calc-key eq" onclick="calcEqual()">=</button>
+            <button class="calc-key"       onclick="calcDot()">.</button>
+            <button class="calc-key eq"    onclick="calcEqual()">=</button>
           </div>
         </div>
-
         <div class="calc-log" id="calc-log">
           <div class="log-title">LOG</div>
         </div>
@@ -654,133 +403,252 @@
     <div class="footer-text">Kitchen Tool</div>
   </footer>
 
-  <!-- 하단 탭 -->
   <nav class="tab-nav">
-    <button class="active" id="tab-calc" onclick="switchTab('calc')">
-      <span class="ko">소스</span>
-      <span class="en" style="display:none">SAUCE</span>
+    <button class="active" id="tab-calc"    onclick="switchTab('calc')">
+      <span data-ko="소스"   data-en="SAUCE"></span>
     </button>
-    <button id="tab-recipe" onclick="switchTab('recipe')">
-      <span class="ko">레시피</span>
-      <span class="en" style="display:none">RECIPE</span>
+    <button id="tab-recipe"  onclick="switchTab('recipe')">
+      <span data-ko="레시피" data-en="RECIPE"></span>
     </button>
     <button id="tab-general" onclick="switchTab('general')">
-      <span class="ko">계산기</span>
-      <span class="en" style="display:none">CALC</span>
+      <span data-ko="계산기" data-en="CALC"></span>
     </button>
   </nav>
 
   <script>
-    const recipes = {
+    // ── 데이터 ──────────────────────────────────────────────
+    const SAUCE_MENUS = {
       'spicy-tuna': {
-        label: { ko: '스파이시 투나 무게', en: 'SPICY TUNA WEIGHT' },
+        label:  { ko: '스파이시 투나', en: 'SPICY TUNA' },
+        weight: { ko: '스파이시 투나 무게', en: 'SPICY TUNA WEIGHT' },
         ingredients: [
-          { ko: '간장', en: 'SOY SAUCE', per1kg: 25 },
-          { ko: '라유', en: 'RAYU', per1kg: 25 },
-          { ko: '스리라차', en: 'SRIRACHA', per1kg: 25 },
-          { ko: '초장', en: 'CHOJANG', per1kg: 180 },
-          { ko: '시치미', en: 'SHICHIMI', per1kg: 5 },
+          { ko: '간장',   en: 'SOY SAUCE', per1kg: 25  },
+          { ko: '라유',   en: 'RAYU',      per1kg: 25  },
+          { ko: '스리라차', en: 'SRIRACHA', per1kg: 25  },
+          { ko: '초장',   en: 'CHOJANG',   per1kg: 180 },
+          { ko: '시치미', en: 'SHICHIMI',  per1kg: 5   },
         ]
       },
       'salmon-chop': {
-        label: { ko: '살몬 무게', en: 'SALMON WEIGHT' },
+        label:  { ko: '살몬 찹',  en: 'CHOPPED SALMON' },
+        weight: { ko: '살몬 무게', en: 'SALMON WEIGHT' },
         ingredients: [
-          { ko: '벌크마요', en: 'BULK MAYO', per1kg: 100 },
-          { ko: '스리라차', en: 'SRIRACHA', per1kg: 20 },
+          { ko: '벌크마요',  en: 'BULK MAYO', per1kg: 100 },
+          { ko: '스리라차',  en: 'SRIRACHA',  per1kg: 20  },
         ]
       }
     };
 
-    let currentMenu = null;
-    let lang = 'ko';
-    let currentTab = 'calc';
+    const RECIPES = [
+      {
+        name: { ko: '찹 스캘럽',  en: 'Chopped Scallop' },
+        base: { ko: '1봉지 기준', en: 'Per 1 Pack' },
+        items: [
+          { ko: '벌크마요', en: 'Bulk Mayo', amt: '175g' },
+          { ko: '마사고',   en: 'Masago',   amt: '125g' },
+        ]
+      },
+      {
+        name: { ko: '사워크림', en: 'Sour Cream' },
+        base: { ko: '500ml 기준', en: 'Per 500ml' },
+        items: [
+          { ko: '소금',   en: 'Salt',    amt: '2 tsp'   },
+          { ko: '파슬리', en: 'Parsley', amt: '0.5 tsp' },
+          { ko: '후추',   en: 'Pepper',  amt: '0.5 tsp' },
+        ]
+      },
+      {
+        name: { ko: '스파이시마요', en: 'Spicy Mayo' },
+        base: { ko: '1:5 비율', en: '1:5 Ratio' },
+        items: [
+          { ko: '스리라차', en: 'Sriracha',  amt: '630g'  },
+          { ko: '벌크마요', en: 'Bulk Mayo', amt: '3150g' },
+        ]
+      },
+      {
+        name: { ko: '망고소스', en: 'Mango Sauce' },
+        base: null,
+        items: [
+          { ko: '냉동망고', en: 'Frozen Mango', amt: '700g'  },
+          { ko: '미림',     en: 'Mirin',        amt: '400ml' },
+        ]
+      },
+      {
+        name: { ko: '와사비마요', en: 'Wasabi Mayo' },
+        base: null,
+        items: [
+          { ko: '벌크마요',  en: 'Bulk Mayo',     amt: '2kg'  },
+          { ko: '미림',      en: 'Mirin',         amt: '1L'   },
+          { ko: '와사비가루', en: 'Wasabi Powder', amt: '150g' },
+          { ko: '설탕',      en: 'Sugar',         amt: '8 tsp'},
+        ]
+      },
+      {
+        name: { ko: '타르타르', en: 'Tartar' },
+        base: null,
+        items: [
+          { ko: '양파펄프', en: 'Onion Pulp', amt: '550g'    },
+          { ko: '켄코마요', en: 'Kenko Mayo', amt: '3kg'     },
+          { ko: '물',       en: 'Water',      amt: '100ml'   },
+          { ko: '레몬',     en: 'Lemon',      amt: '7 tsp'   },
+          { ko: '젓갈',     en: 'Jeotgal',    amt: '7 tsp'   },
+          { ko: '설탕',     en: 'Sugar',      amt: '80g'     },
+          { ko: '생강',     en: 'Ginger',     amt: '1.5 tsp' },
+          { ko: '후추',     en: 'Pepper',     amt: '4 tsp'   },
+          { ko: '노른자',   en: 'Egg Yolk',   amt: '8개'     },
+        ]
+      },
+    ];
 
-    const titles = {
+    const TITLES = {
       calc:    { ko: '소스 비율 계산기', en: 'Sauce Ratio Calculator' },
-      recipe:  { ko: '소스 레시피',      en: 'Sauce Recipes' },
-      general: { ko: '계산기',           en: 'Calculator' },
+      recipe:  { ko: '소스 레시피',      en: 'Sauce Recipes'          },
+      general: { ko: '계산기',           en: 'Calculator'             },
     };
 
+    const RESULT_LABEL = { ko: '소스 비율', en: 'SAUCE RATIO' };
+
+    // ── 상태 ────────────────────────────────────────────────
+    let lang       = 'ko';
+    let currentTab = 'calc';
+    let currentMenu = null;
+
+    // ── 초기화 ──────────────────────────────────────────────
+    function init() {
+      // 소스 버튼 텍스트
+      Object.entries(SAUCE_MENUS).forEach(([key, data]) => {
+        document.getElementById('btn-' + key).textContent = data.label[lang];
+      });
+      // 레시피 카드 렌더
+      renderRecipes();
+      // 탭 텍스트
+      renderTabLabels();
+    }
+
+    function renderTabLabels() {
+      document.querySelectorAll('.tab-nav button span').forEach(span => {
+        span.textContent = span.dataset[lang];
+      });
+    }
+
+    function renderRecipes() {
+      document.getElementById('recipe-label').textContent =
+        lang === 'ko' ? '소스 레시피' : 'SAUCE RECIPES';
+
+      document.getElementById('recipe-list').innerHTML = RECIPES.map(r => `
+        <div class="recipe-card" onclick="this.classList.toggle('open')">
+          <div class="recipe-card-header">
+            <div>
+              <div class="r-title">${r.name[lang]}</div>
+              ${r.base ? `<div class="r-base">${r.base[lang]}</div>` : ''}
+            </div>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="recipe-card-body">
+            ${r.items.map(i => `
+              <div class="recipe-row">
+                <span class="ing">${i[lang]}</span>
+                <span class="amt">${i.amt}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ── 언어 ────────────────────────────────────────────────
     function toggleLang() {
       lang = lang === 'ko' ? 'en' : 'ko';
       document.getElementById('langBtn').textContent = lang === 'ko' ? 'EN' : 'KO';
-      document.querySelectorAll('.ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
-      document.querySelectorAll('.en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
-      document.getElementById('title').textContent = titles[currentTab][lang];
+      document.getElementById('title').textContent = TITLES[currentTab][lang];
+
+      // 소스 버튼
+      Object.entries(SAUCE_MENUS).forEach(([key, data]) => {
+        document.getElementById('btn-' + key).textContent = data.label[lang];
+      });
+
+      // 입력 레이블
       if (currentMenu) {
-        document.getElementById('input-label').textContent = recipes[currentMenu].label[lang];
+        document.getElementById('input-label').textContent = SAUCE_MENUS[currentMenu].weight[lang];
+        document.getElementById('result-label').textContent = RESULT_LABEL[lang];
         calculate();
       }
+
+      // 레시피 재렌더
+      renderRecipes();
+
+      // 탭 텍스트
+      renderTabLabels();
     }
 
-    function selectMenu(menu) {
-      currentMenu = menu;
-      document.getElementById('btn-tuna').classList.toggle('active', menu === 'spicy-tuna');
-      document.getElementById('btn-salmon').classList.toggle('active', menu === 'salmon-chop');
-      document.getElementById('input-label').textContent = recipes[menu].label[lang];
-      document.getElementById('input-section').classList.add('visible');
-      const input = document.getElementById('weight-input');
-      input.value = '';
-      input.focus();
-      document.getElementById('result-section').classList.remove('visible');
-      document.getElementById('result-list').innerHTML = '';
-    }
-
-    function calculate() {
-      if (!currentMenu) return;
-      const weight = parseFloat(document.getElementById('weight-input').value);
-      const resultSection = document.getElementById('result-section');
-      const resultList = document.getElementById('result-list');
-
-      if (!weight || weight <= 0) {
-        resultSection.classList.remove('visible');
-        resultList.innerHTML = '';
-        return;
-      }
-
-      const ratio = weight / 1000;
-      resultList.innerHTML = recipes[currentMenu].ingredients.map(item => {
-        const raw = item.per1kg * ratio;
-        const display = raw % 1 === 0 ? raw : parseFloat(raw.toFixed(1));
-        return `
-          <div class="result-item">
-            <span class="name">${item[lang]}</span>
-            <span class="value">${display}<span>g</span></span>
-          </div>
-        `;
-      }).join('');
-
-      resultSection.classList.add('visible');
-    }
-
+    // ── 탭 ──────────────────────────────────────────────────
     function switchTab(tab) {
       currentTab = tab;
       ['calc', 'recipe', 'general'].forEach(t => {
         document.getElementById('page-' + t).classList.toggle('active', t === tab);
         document.getElementById('tab-' + t).classList.toggle('active', t === tab);
       });
-      document.getElementById('title').textContent = titles[tab][lang];
+      document.getElementById('title').textContent = TITLES[tab][lang];
     }
 
-    function toggleCard(card) {
-      card.classList.toggle('open');
+    // ── 소스 계산기 ─────────────────────────────────────────
+    function selectMenu(menu) {
+      currentMenu = menu;
+
+      Object.keys(SAUCE_MENUS).forEach(key => {
+        document.getElementById('btn-' + key).classList.toggle('active', key === menu);
+      });
+
+      document.getElementById('input-label').textContent = SAUCE_MENUS[menu].weight[lang];
+      document.getElementById('result-label').textContent = RESULT_LABEL[lang];
+      document.getElementById('input-box').classList.add('visible');
+
+      const input = document.getElementById('weight-input');
+      input.value = '';
+      input.focus();
+
+      document.getElementById('result-box').classList.remove('visible');
+      document.getElementById('result-list').innerHTML = '';
     }
 
-    // 일반 계산기
-    let cDisplay = '0';
-    let cExpr = '';
-    let cOp = null;
-    let cPrev = null;
-    let cFresh = true;
+    function calculate() {
+      if (!currentMenu) return;
+      const weight = parseFloat(document.getElementById('weight-input').value);
+      const resultBox  = document.getElementById('result-box');
+      const resultList = document.getElementById('result-list');
+
+      if (!weight || weight <= 0) {
+        resultBox.classList.remove('visible');
+        resultList.innerHTML = '';
+        return;
+      }
+
+      const ratio = weight / 1000;
+      resultList.innerHTML = SAUCE_MENUS[currentMenu].ingredients.map(item => {
+        const raw = item.per1kg * ratio;
+        const display = raw % 1 === 0 ? raw : parseFloat(raw.toFixed(1));
+        return `
+          <div class="result-item">
+            <span class="r-name">${item[lang]}</span>
+            <span class="r-val">${display}<small>g</small></span>
+          </div>
+        `;
+      }).join('');
+
+      resultBox.classList.add('visible');
+    }
+
+    // ── 일반 계산기 ─────────────────────────────────────────
+    let cDisplay = '0', cExpr = '', cOp = null, cPrev = null, cFresh = true;
 
     function updateCalcDisplay() {
-      document.getElementById('calc-num').textContent = cDisplay;
+      document.getElementById('calc-num').textContent  = cDisplay;
       document.getElementById('calc-expr').textContent = cExpr;
     }
 
     function calcNum(n) {
-      if (cFresh) { cDisplay = n; cFresh = false; }
-      else cDisplay = cDisplay === '0' ? n : cDisplay + n;
+      cDisplay = cFresh ? n : (cDisplay === '0' ? n : cDisplay + n);
+      cFresh = false;
       updateCalcDisplay();
     }
 
@@ -792,57 +660,39 @@
 
     function calcOp(op) {
       cPrev = parseFloat(cDisplay);
-      cOp = op;
+      cOp   = op;
       cExpr = cDisplay + ' ' + op;
       cFresh = true;
       updateCalcDisplay();
     }
 
     function calcEqual() {
-      if (cOp === null || cPrev === null) return;
+      if (!cOp || cPrev === null) return;
       const cur = parseFloat(cDisplay);
-      const opMap = { '+': cPrev + cur, '−': cPrev - cur, '×': cPrev * cur, '÷': cPrev / cur };
-      const result = opMap[cOp];
-      const expr = cExpr + ' ' + cDisplay;
-      const display = parseFloat(result.toFixed(8)).toString();
+      const ops = { '+': cPrev + cur, '−': cPrev - cur, '×': cPrev * cur, '÷': cPrev / cur };
+      const result = parseFloat(ops[cOp].toFixed(8)).toString();
+      const expr   = cExpr + ' ' + cDisplay;
 
-      addLog(expr, display);
-
-      cDisplay = display;
-      cExpr = '';
-      cOp = null;
-      cPrev = null;
-      cFresh = true;
-      updateCalcDisplay();
-    }
-
-    function calcClear() {
-      cDisplay = '0'; cExpr = ''; cOp = null; cPrev = null; cFresh = true;
-      updateCalcDisplay();
-    }
-
-    function calcToggleSign() {
-      cDisplay = (parseFloat(cDisplay) * -1).toString();
-      updateCalcDisplay();
-    }
-
-    function calcPercent() {
-      cDisplay = (parseFloat(cDisplay) / 100).toString();
-      updateCalcDisplay();
-    }
-
-    function addLog(expr, result) {
-      const log = document.getElementById('calc-log');
+      const log  = document.getElementById('calc-log');
       const item = document.createElement('div');
       item.className = 'log-item';
       item.innerHTML = `<div class="log-expr">${expr} =</div><div class="log-result">${result}</div>`;
       log.appendChild(item);
       log.scrollTop = log.scrollHeight;
+
+      cDisplay = result;
+      cExpr = ''; cOp = null; cPrev = null; cFresh = true;
+      updateCalcDisplay();
     }
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js');
-    }
+    function calcClear()      { cDisplay = '0'; cExpr = ''; cOp = null; cPrev = null; cFresh = true; updateCalcDisplay(); }
+    function calcToggleSign() { cDisplay = (parseFloat(cDisplay) * -1).toString(); updateCalcDisplay(); }
+    function calcPercent()    { cDisplay = (parseFloat(cDisplay) / 100).toString(); updateCalcDisplay(); }
+
+    // ── 서비스워커 & 시작 ────────────────────────────────────
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+
+    init();
   </script>
 </body>
 </html>
