@@ -293,7 +293,8 @@
     .recipe-card-header .recipe-base {
       font-size: 10px;
       letter-spacing: 1px;
-      color: #666;
+      color: #cc0000;
+      margin-top: 4px;
     }
 
     .recipe-card-header .chevron {
@@ -330,6 +331,127 @@
       font-size: 13px;
       font-weight: 400;
       color: #fff;
+    }
+
+    /* 일반 계산기 */
+    .calc-wrap {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .calc-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .calc-display {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      padding: 16px 18px;
+      text-align: right;
+      margin-bottom: 6px;
+    }
+
+    .calc-expr {
+      font-size: 11px;
+      color: #555;
+      letter-spacing: 1px;
+      min-height: 16px;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .calc-num {
+      font-size: 32px;
+      font-weight: 300;
+      color: #fff;
+      letter-spacing: 1px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .calc-keys {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .calc-key {
+      padding: 16px 0;
+      border: none;
+      border-radius: 2px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    .calc-key:active { opacity: 0.6; }
+
+    .calc-key.op {
+      background: #2a0000;
+      color: #ff4444;
+    }
+
+    .calc-key.eq {
+      background: #cc0000;
+      color: #fff;
+    }
+
+    .calc-key.clear {
+      background: #222;
+      color: #aaa;
+    }
+
+    /* 히스토리 로그 */
+    .calc-log {
+      width: 100px;
+      background: #0d0d0d;
+      border: 1px solid #1a1a1a;
+      padding: 10px 8px;
+      max-height: 320px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .calc-log::-webkit-scrollbar { width: 2px; }
+    .calc-log::-webkit-scrollbar-thumb { background: #333; }
+
+    .log-title {
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: #444;
+      text-transform: uppercase;
+      text-align: center;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    .log-item {
+      text-align: right;
+    }
+
+    .log-expr {
+      font-size: 9px;
+      color: #555;
+      line-break: anywhere;
+    }
+
+    .log-result {
+      font-size: 13px;
+      font-weight: 300;
+      color: #ddd;
     }
   </style>
 </head>
@@ -484,6 +606,47 @@
       </div>
     </div>
 
+    <!-- 일반 계산기 페이지 -->
+    <div class="page" id="page-general">
+      <div class="calc-wrap">
+        <div class="calc-main">
+          <div class="calc-display">
+            <div class="calc-expr" id="calc-expr"></div>
+            <div class="calc-num" id="calc-num">0</div>
+          </div>
+          <div class="calc-keys">
+            <button class="calc-key clear" onclick="calcClear()">AC</button>
+            <button class="calc-key clear" onclick="calcToggleSign()">+/-</button>
+            <button class="calc-key clear" onclick="calcPercent()">%</button>
+            <button class="calc-key op" onclick="calcOp('÷')">÷</button>
+
+            <button class="calc-key" onclick="calcNum('7')">7</button>
+            <button class="calc-key" onclick="calcNum('8')">8</button>
+            <button class="calc-key" onclick="calcNum('9')">9</button>
+            <button class="calc-key op" onclick="calcOp('×')">×</button>
+
+            <button class="calc-key" onclick="calcNum('4')">4</button>
+            <button class="calc-key" onclick="calcNum('5')">5</button>
+            <button class="calc-key" onclick="calcNum('6')">6</button>
+            <button class="calc-key op" onclick="calcOp('−')">−</button>
+
+            <button class="calc-key" onclick="calcNum('1')">1</button>
+            <button class="calc-key" onclick="calcNum('2')">2</button>
+            <button class="calc-key" onclick="calcNum('3')">3</button>
+            <button class="calc-key op" onclick="calcOp('+')">+</button>
+
+            <button class="calc-key" onclick="calcNum('0')" style="grid-column:span 2">0</button>
+            <button class="calc-key" onclick="calcDot()">.</button>
+            <button class="calc-key eq" onclick="calcEqual()">=</button>
+          </div>
+        </div>
+
+        <div class="calc-log" id="calc-log">
+          <div class="log-title">LOG</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <footer>
@@ -494,12 +657,16 @@
   <!-- 하단 탭 -->
   <nav class="tab-nav">
     <button class="active" id="tab-calc" onclick="switchTab('calc')">
-      <span class="ko">계산기</span>
-      <span class="en" style="display:none">CALC</span>
+      <span class="ko">소스</span>
+      <span class="en" style="display:none">SAUCE</span>
     </button>
     <button id="tab-recipe" onclick="switchTab('recipe')">
       <span class="ko">레시피</span>
       <span class="en" style="display:none">RECIPE</span>
+    </button>
+    <button id="tab-general" onclick="switchTab('general')">
+      <span class="ko">계산기</span>
+      <span class="en" style="display:none">CALC</span>
     </button>
   </nav>
 
@@ -526,13 +693,20 @@
 
     let currentMenu = null;
     let lang = 'ko';
+    let currentTab = 'calc';
+
+    const titles = {
+      calc:    { ko: '소스 비율 계산기', en: 'Sauce Ratio Calculator' },
+      recipe:  { ko: '소스 레시피',      en: 'Sauce Recipes' },
+      general: { ko: '계산기',           en: 'Calculator' },
+    };
 
     function toggleLang() {
       lang = lang === 'ko' ? 'en' : 'ko';
       document.getElementById('langBtn').textContent = lang === 'ko' ? 'EN' : 'KO';
       document.querySelectorAll('.ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
       document.querySelectorAll('.en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
-      document.getElementById('title').textContent = lang === 'ko' ? '소스 비율 계산기' : 'Sauce Ratio Calculator';
+      document.getElementById('title').textContent = titles[currentTab][lang];
       if (currentMenu) {
         document.getElementById('input-label').textContent = recipes[currentMenu].label[lang];
         calculate();
@@ -566,8 +740,8 @@
 
       const ratio = weight / 1000;
       resultList.innerHTML = recipes[currentMenu].ingredients.map(item => {
-        const amount = (item.per1kg * ratio).toFixed(1);
-        const display = amount.endsWith('.0') ? parseInt(amount) : amount;
+        const raw = item.per1kg * ratio;
+        const display = raw % 1 === 0 ? raw : parseFloat(raw.toFixed(1));
         return `
           <div class="result-item">
             <span class="name">${item[lang]}</span>
@@ -580,19 +754,90 @@
     }
 
     function switchTab(tab) {
-      document.getElementById('page-calc').classList.toggle('active', tab === 'calc');
-      document.getElementById('page-recipe').classList.toggle('active', tab === 'recipe');
-      document.getElementById('tab-calc').classList.toggle('active', tab === 'calc');
-      document.getElementById('tab-recipe').classList.toggle('active', tab === 'recipe');
-      if (tab === 'calc') {
-        document.getElementById('title').textContent = lang === 'ko' ? '소스 비율 계산기' : 'Sauce Ratio Calculator';
-      } else {
-        document.getElementById('title').textContent = lang === 'ko' ? '소스 레시피' : 'Sauce Recipes';
-      }
+      currentTab = tab;
+      ['calc', 'recipe', 'general'].forEach(t => {
+        document.getElementById('page-' + t).classList.toggle('active', t === tab);
+        document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+      });
+      document.getElementById('title').textContent = titles[tab][lang];
     }
 
     function toggleCard(card) {
       card.classList.toggle('open');
+    }
+
+    // 일반 계산기
+    let cDisplay = '0';
+    let cExpr = '';
+    let cOp = null;
+    let cPrev = null;
+    let cFresh = true;
+
+    function updateCalcDisplay() {
+      document.getElementById('calc-num').textContent = cDisplay;
+      document.getElementById('calc-expr').textContent = cExpr;
+    }
+
+    function calcNum(n) {
+      if (cFresh) { cDisplay = n; cFresh = false; }
+      else cDisplay = cDisplay === '0' ? n : cDisplay + n;
+      updateCalcDisplay();
+    }
+
+    function calcDot() {
+      if (cFresh) { cDisplay = '0.'; cFresh = false; }
+      else if (!cDisplay.includes('.')) cDisplay += '.';
+      updateCalcDisplay();
+    }
+
+    function calcOp(op) {
+      cPrev = parseFloat(cDisplay);
+      cOp = op;
+      cExpr = cDisplay + ' ' + op;
+      cFresh = true;
+      updateCalcDisplay();
+    }
+
+    function calcEqual() {
+      if (cOp === null || cPrev === null) return;
+      const cur = parseFloat(cDisplay);
+      const opMap = { '+': cPrev + cur, '−': cPrev - cur, '×': cPrev * cur, '÷': cPrev / cur };
+      const result = opMap[cOp];
+      const expr = cExpr + ' ' + cDisplay;
+      const display = parseFloat(result.toFixed(8)).toString();
+
+      addLog(expr, display);
+
+      cDisplay = display;
+      cExpr = '';
+      cOp = null;
+      cPrev = null;
+      cFresh = true;
+      updateCalcDisplay();
+    }
+
+    function calcClear() {
+      cDisplay = '0'; cExpr = ''; cOp = null; cPrev = null; cFresh = true;
+      updateCalcDisplay();
+    }
+
+    function calcToggleSign() {
+      cDisplay = (parseFloat(cDisplay) * -1).toString();
+      updateCalcDisplay();
+    }
+
+    function calcPercent() {
+      cDisplay = (parseFloat(cDisplay) / 100).toString();
+      updateCalcDisplay();
+    }
+
+    function addLog(expr, result) {
+      const log = document.getElementById('calc-log');
+      const item = document.createElement('div');
+      item.className = 'log-item';
+      item.innerHTML = `<div class="log-expr">${expr} =</div><div class="log-result">${result}</div>`;
+      log.appendChild(item);
+      log.scrollTop = log.scrollHeight;
     }
 
     if ('serviceWorker' in navigator) {
