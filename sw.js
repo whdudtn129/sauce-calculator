@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sauce-calc-v2';
+const CACHE_NAME = 'sauce-calc-v3';
 const ASSETS = [
   './calculator.html',
   './manifest.json',
